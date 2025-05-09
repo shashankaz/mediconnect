@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import "dotenv/config";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 import Doctor from "./models/Doctor";
 import connectDB from "./config/db";
@@ -10,11 +12,23 @@ import doctors from "./seed/doctors";
 const app = express();
 
 app.use(cors());
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
+});
+app.use(limiter);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 connectDB();
+
+app.get("/", (req, res) => {
+  res.send("API is Live!");
+});
 
 app.get("/api/doctors/seed", async (req, res) => {
   try {
@@ -154,6 +168,10 @@ app.get("/api/doctors", async (req, res) => {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
+});
+
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: "Route not found" });
 });
 
 const PORT = process.env.PORT || 4000;
