@@ -2,6 +2,8 @@
 
 MediConnect is a web application designed to connect patients with doctors for online consultations. The platform allows users to browse and filter doctors based on various criteria, and doctors can be added to the system through an admin interface.
 
+![alt text](image.png)
+
 ## Features
 
 ### Client-Side Features
